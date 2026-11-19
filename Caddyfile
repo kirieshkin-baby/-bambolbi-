@@ -1,0 +1,8 @@
+{$SITE_DOMAIN} {
+    basic_auth {
+        {$ADMIN_USER} {$ADMIN_HASH}
+    }
+    reverse_proxy app:5050 {
+        header_up X-Bambolbi-User {http.auth.user.id}
+    }
+}
