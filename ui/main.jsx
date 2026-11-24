@@ -49,7 +49,7 @@ function Shell() {
     setToast({message,error});
     toastTimer.current = setTimeout(() => setToast(null),4500);
   };
-  const edit = (table,row) => setEditor({table,row});
+  const edit = (table,row,defaults) => setEditor({table,row,defaults});
   const remove = (table,row) => setEditor({table,row,delete:true});
   const close = () => setEditor(null);
   const saved = message => {changed();close();notify(message);};

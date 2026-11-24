@@ -3,6 +3,7 @@ import { Actions } from './catalogs.jsx';
 import { Badge, Button, Chart, Empty, Icon, IconButton, LinkButton, PageTitle, Panel, Progress, Search, Select, State, Table, api, dayLabel, dayStart, hm, instant, num, percent, taskStatuses, useData } from './shared.jsx';
 
 const DAY = 86400000;
+const HOUR = 3600000;
 const tabs = (value, set, options) => <div className="segments">{options.map(([key,label,icon]) =>
   <Button key={key} icon={icon} aria-pressed={value === key} onClick={() => set(key)}>{label}</Button>)}</div>;
 const optionsFor = (screens) => [{value:'',label:'Все экраны'}, ...(screens || []).map(row => ({value:row.id,label:row.name}))];
@@ -21,6 +22,13 @@ export function Schedule({ revision, edit, remove }) {
   const now = Date.now();
   const rows = (data || []).filter(row => !screen || row.screen_id === Number(screen));
   const days = Array.from({length:7}, (_, i) => week + DAY * i);
+  const today = dayStart(now);
+  function addOnDay(day) {
+    edit('slots', undefined, {
+      starts: day === today ? Math.floor(now / 60000) * 60000 : day + 9 * HOUR,
+      screen_id: screen || undefined
+    });
+  }
   return <>
     <PageTitle title="Расписание" description="Планируйте слоты показов по московскому времени"><Button primary icon="plus" onClick={() => edit('slots')}>Создать слот</Button></PageTitle>
     <Panel title={view === 'week' ? 'Недельный календарь' : 'Список слотов'}
@@ -34,12 +42,17 @@ export function Schedule({ revision, edit, remove }) {
       <State error={error || screens.error} loading={!data}/>
       {data && view === 'week' && <div className="week-scroll"><div className="week-grid">
         {days.map((day,i) => <div className="week-day" key={day}>
-          <div className={'week-date ' + (day === dayStart(now) ? 'current-day' : '')}><span>{['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][i]}</span><b>{dayLabel(day)}</b></div>
+          <div className={'week-date ' + (day === today ? 'current-day' : '')} aria-current={day === today ? 'date' : undefined}>
+            <span>{['Пн','Вт','Ср','Чт','Пт','Сб','Вс'][i]}</span><b>{dayLabel(day)}</b>
+          </div>
           {rows.filter(row => row.starts < day + DAY && row.ends > day).map(row =>
             <button key={row.id} type="button" className={'slot-tile ' + (slotStatus(row, now) === 'Идёт показ' ? 'playing' : '')} onClick={() => edit('slots',row)}>
               <time>{row.starts < day ? '00:00' : hm(row.starts)}–{row.ends >= day + DAY ? '24:00' : hm(row.ends)}</time>
               <b>{row.campaign}</b><span>{row.screen}</span>
             </button>)}
+          <button className="add-day-slot" type="button" aria-label={'Создать слот на ' + dayLabel(day)} onClick={() => addOnDay(day)}>
+            <Icon name="plus" size={14}/> Слот
+          </button>
         </div>)}
       </div></div>}
       {data && view === 'list' && (rows.length ? <Table headers={['Период · МСК','Билборд и кампания','Материал','Цикл','Статус','Действия']}>{rows.map(row => <tr key={row.id}>

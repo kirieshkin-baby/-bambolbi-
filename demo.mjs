@@ -28,11 +28,23 @@ export function seed({ db, put, uploads, root, copyFileSync, now, DAY, MOSCOW })
   });
   const minute = Math.floor(now / 60000) * 60000;
   const cycle = 10;
-  const slots = [0, 1, 2].map(index => put('slots', { screen_id: screens[index], campaign_id: campaigns[index], media_id: materials[index],
+  [0, 1, 2].forEach(index => put('slots', { screen_id: screens[index], campaign_id: campaigns[index], media_id: materials[index],
     starts: minute - (index + 1) * 3600000, ends: minute + (index + 2) * 3600000, cycle }));
   put('slots', { screen_id: screens[5], campaign_id: campaigns[1], media_id: materials[1], starts: minute + 2 * 3600000, ends: minute + 5 * 3600000, cycle: 15 });
 
   const localDay = Math.floor((now + MOSCOW) / DAY) * DAY - MOSCOW;
+  const weekday = (new Date(localDay + MOSCOW).getUTCDay() + 6) % 7;
+  const hour = 3600000;
+  // Today's live demo slots are created above. Daytime slots on adjacent days
+  // stay clear of those slots even when the live demo crosses midnight.
+  for (let offset = -weekday; offset <= 7; offset++) {
+    if (offset === 0) continue;
+    const day = localDay + offset * DAY;
+    for (const [index, from, to] of [[0, 9, 12], [1, 12, 15], [2, 17, 20]]) {
+      put('slots', { screen_id: screens[index], campaign_id: campaigns[index], media_id: materials[index],
+        starts: day + from * hour, ends: day + to * hour, cycle });
+    }
+  }
   const counts = [112, 171, 145, 238, 207, 274, 186];
   const insertEvent = db.prepare(`INSERT INTO events(at,slot_id,cycle_start,screen_id,campaign_id,media_id,screen,campaign,media)
     VALUES(?,?,?,?,?,?,?,?,?)`);

@@ -171,9 +171,9 @@ export function Chart({ rows }) {
       <div className="chart-canvas">
         <div className="chart-grid">{[0,1,2,3,4].map(i => <i key={i}/>)}</div>
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#c6e65d" stopOpacity=".45"/><stop offset="1" stopColor="#ebf4d1" stopOpacity=".28"/></linearGradient></defs>
+          <defs><linearGradient id="chart-fill" x1="0" x2="0" y1="0" y2="1"><stop stopColor="#ffd63f" stopOpacity=".45"/><stop offset="1" stopColor="#fff1ab" stopOpacity=".28"/></linearGradient></defs>
           <polygon points={'0,100 ' + line + ' 100,100'} fill="url(#chart-fill)"/>
-          <polyline points={line} fill="none" stroke="#819e2e" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round"/>
+          <polyline points={line} fill="none" stroke="#896500" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeLinejoin="round" strokeLinecap="round"/>
         </svg>
         {points.map(([left, top], index) => <button type="button" key={rows[index].time} className="chart-dot" style={{ left: left + '%', top: top + '%' }}
           aria-label={dayLabel(rows[index].time) + ' · ' + num(rows[index].count) + ' показов'}

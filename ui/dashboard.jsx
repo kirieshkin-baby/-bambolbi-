@@ -27,7 +27,7 @@ export default function Dashboard({ revision, openForm }) {
         </Panel>
         <Panel title="Состояние сети" subtitle="Статусы виртуальных экранов" className="network-panel">
           <div className="network-body">
-            <div className="network-ring" style={{'--ring': data.total ? `conic-gradient(#a9cd48 0% ${data.online / data.total * 100}%, #f3b36c ${data.online / data.total * 100}% ${(data.online + data.maintenance) / data.total * 100}%, #ed8f8c 0 100%)` : '#e9ede5'}}>
+            <div className="network-ring" style={{'--ring': data.total ? `conic-gradient(#c99500 0% ${data.online / data.total * 100}%, #f3b36c ${data.online / data.total * 100}% ${(data.online + data.maintenance) / data.total * 100}%, #ed8f8c 0 100%)` : '#efebe7'}}>
               <div><b>{num(data.total)}</b><span>экранов</span></div>
             </div>
             <div className="net-legend">

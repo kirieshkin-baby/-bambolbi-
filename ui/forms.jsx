@@ -14,20 +14,20 @@ const titles = {
   media:['Загрузить материал','Редактировать материал'], slots:['Создать слот','Редактировать слот'],
   tasks:['Добавить задачу','Редактировать задачу'], risks:['Добавить риск','Редактировать риск']
 };
-function initial(table, row) {
+function initial(table, row, defaults) {
   if (row) return table === 'slots' ? { ...row, starts: moscowInput(row.starts), ends: moscowInput(row.ends) } : row;
   const now = Math.floor(Date.now() / 60000) * 60000;
   return {
     screens: { status:'В сети', resolution:'1920×1080' },
     campaigns: { status:'Черновик' },
     media: {},
-    slots: { starts: moscowInput(now), ends: moscowInput(now + 3600000), cycle: 10 },
+    slots: { starts: moscowInput(defaults?.starts ?? now), ends: moscowInput((defaults?.starts ?? now) + 3600000), cycle: 10, screen_id: defaults?.screen_id },
     tasks: { due: moscowInput(now).slice(0,10), status:'К выполнению' },
     risks: { severity:'Средний' }
   }[table];
 }
-export default function EditForm({ table, row, close, saved }) {
-  const [values, setValues] = useState(() => initial(table, row));
+export default function EditForm({ table, row, defaults, close, saved }) {
+  const [values, setValues] = useState(() => initial(table, row, defaults));
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
